@@ -1,0 +1,84 @@
+.queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.queue-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+.queue-card.in-progress {
+  border-color: #2563eb;
+}
+
+.queue-card-info h3 {
+  margin: 0 0 4px 0;
+  color: #111827;
+}
+
+.queue-card-info p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.queue-card.done {
+  opacity: 0.55;
+}
+
+.queue-card.done .queue-card-info h3 {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.queue-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wait-time {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.waiting {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.in-progress {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.done {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.queue-card-meta button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+}
