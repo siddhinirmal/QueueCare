@@ -3,7 +3,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import Sidebar from "../components/Sidebar";
 import { requireDb } from "../firebase";
 import "./Patients.css";
-
+import Footer from "../components/Footer";
 interface PatientRow {
   id: string;
   name: string;
@@ -76,6 +76,7 @@ function Patients() {
             ))}
           </tbody>
         </table>
+        <Footer/>
       </main>
     </div>
   );

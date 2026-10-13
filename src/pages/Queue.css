@@ -82,3 +82,66 @@
   cursor: pointer;
   font-weight: 500;
 }
+.queue-card.emergency {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.emergency-tag {
+  display: inline-block;
+  background: #dc2626;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+
+.menu-dots {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.menu-dots:hover {
+  background: #f3f4f6;
+}
+
+.menu-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  min-width: 180px;
+}
+
+.menu-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #111827;
+}
+
+.menu-dropdown button:hover {
+  background: #f3f4f6;
+}

@@ -5,7 +5,7 @@ import Sidebar from "../components/Sidebar";
 import { useAuth } from "../context/AuthContext";
 import { requireDb } from "../firebase";
 import "./Settings.css";
-
+import Footer from "../components/Footer";
 function Settings() {
   const navigate = useNavigate();
   const { logout, profile, refreshProfile } = useAuth();
@@ -97,6 +97,7 @@ function Settings() {
         <button className="save-btn" onClick={() => void handleSave()} disabled={saving}>
           {saving ? "Saving..." : "Save Changes"}
         </button>
+      <Footer />
       </main>
     </div>
   );

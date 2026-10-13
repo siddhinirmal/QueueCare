@@ -2,7 +2,6 @@ import { useState, type KeyboardEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { FirebaseError } from "firebase/app";
 import { useAuth } from "../context/AuthContext";
-import type { UserRole } from "../types";
 import "./Login.css";
 
 function authErrorMessage(error: unknown) {
@@ -33,7 +32,6 @@ function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<UserRole>("patient");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -66,7 +64,7 @@ function Login() {
     try {
       const nextProfile =
         mode === "signup"
-          ? await signup(name, email.trim(), password, role)
+          ? await signup(name, email.trim(), password, "patient")
           : await login(email.trim(), password);
       navigate(nextProfile.role === "doctor" ? "/doctor" : "/patient");
     } catch (err) {
@@ -95,32 +93,13 @@ function Login() {
         )}
 
         {mode === "signup" && (
-          <>
-            <input
-              type="text"
-              placeholder="Full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-
-            <div className="role-toggle">
-              <button
-                type="button"
-                className={role === "patient" ? "selected" : ""}
-                onClick={() => setRole("patient")}
-              >
-                Patient
-              </button>
-              <button
-                type="button"
-                className={role === "doctor" ? "selected" : ""}
-                onClick={() => setRole("doctor")}
-              >
-                Doctor
-              </button>
-            </div>
-          </>
+          <input
+            type="text"
+            placeholder="Full name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
         )}
 
         <input

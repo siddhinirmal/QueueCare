@@ -4,16 +4,16 @@ import { useAuth } from "../../context/AuthContext";
 import { listenToPatientActiveEntry, listenToDoctorQueue } from "../../lib/queue";
 import type { QueueEntry } from "../../types";
 import "./PatientQueue.css";
-
+import Footer from "../../components/Footer";
 function PatientQueue() {
   const { profile } = useAuth();
   const [entry, setEntry] = useState<QueueEntry | null>(null);
   const [doctorQueue, setDoctorQueue] = useState<QueueEntry[]>([]);
 
-  useEffect(() => {
-    if (!profile) return;
-    return listenToPatientActiveEntry(profile.id, setEntry);
-  }, [profile]);
+ useEffect(() => {
+  if (!profile) return;
+  return listenToPatientActiveEntry(profile.id, (nextEntry) => setEntry(nextEntry));
+}, [profile]);
 
   useEffect(() => {
     if (!entry) {
@@ -93,6 +93,7 @@ function PatientQueue() {
             </tbody>
           </table>
         </div>
+        <Footer/>
       </main>
     </div>
   );

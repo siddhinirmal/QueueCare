@@ -4,6 +4,23 @@ import { useAuth } from "../context/AuthContext";
 import { listenToDoctorQueue, startNext, completeEntry } from "../lib/queue";
 import type { QueueEntry } from "../types";
 import "./DoctorDashboard.css";
+import Footer from "../components/Footer";
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  if (hour < 17) return "Good Afternoon";
+  return "Good Evening";
+}
+
+function isToday(ms: number) {
+  const d = new Date(ms);
+  const now = new Date();
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+}
 
 function DoctorDashboard() {
   const { profile } = useAuth();
@@ -18,12 +35,14 @@ function DoctorDashboard() {
 
   const waiting = entries.filter((e) => e.status === "waiting");
   const current = entries.find((e) => e.status === "in-progress") ?? null;
-  const completedToday = entries.filter((e) => e.status === "done").length;
+  const completedToday = entries.filter(
+    (e) => e.status === "done" && e.completedAtMs != null && isToday(e.completedAtMs)
+  ).length;
 
   async function handleCallNext() {
     if (current) await completeEntry(current);
     const next = [...waiting].sort((a, b) => a.tokenNumber - b.tokenNumber)[0];
-    if (next) await startNext(next.id);
+    if (next) await startNext(next);
   }
 
   return (
@@ -32,7 +51,7 @@ function DoctorDashboard() {
       <main className="dashboard-content">
         <div className="top-bar">
           <div>
-            <h2>Good Morning, Doctor</h2>
+            <h2>{greeting()}, Doctor</h2>
             <p>Here's your queue for today.</p>
           </div>
           <div className="doctor-name">{profile.name}</div>
@@ -55,6 +74,7 @@ function DoctorDashboard() {
             {current ? "Complete & Call Next" : "Call Next Patient"}
           </button>
         </div>
+<Footer />
       </main>
     </div>
   );

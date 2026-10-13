@@ -25,6 +25,8 @@ export interface QueueEntry {
   tokenNumber: number;
   reason: string;
   status: QueueStatus;
+  isEmergency: boolean;
+  notifiedTenMin: boolean;
   createdAtMs: number;
   calledAtMs: number | null;
   completedAtMs: number | null;

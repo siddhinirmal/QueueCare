@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PatientSidebar from "../../components/PatientSidebar";
 import { useAuth } from "../../context/AuthContext";
 import {
   joinQueue, listenToPatientActiveEntry, listenToPatientVisits,
-  listenToPatientNotifications, listenToDoctorQueue,
+  listenToPatientNotifications,
 } from "../../lib/queue";
+import { requestNotificationPermission, showBrowserNotification } from "../../lib/browserNotify";
 import type { QueueEntry, Visit, NotificationItem } from "../../types";
 import "./PatientHome.css";
-
+import Footer from "../../components/Footer";
 function PatientHome() {
   const { profile } = useAuth();
   const [entry, setEntry] = useState<QueueEntry | null>(null);
@@ -17,29 +18,43 @@ function PatientHome() {
   const [joining, setJoining] = useState(false);
   const [reason, setReason] = useState("");
 
+  const seenNotificationIds = useRef<Set<string> | null>(null);
+
+  useEffect(() => {
+    requestNotificationPermission();
+  }, []);
+
   useEffect(() => {
     if (!profile) return;
-    const unsub = listenToPatientActiveEntry(profile.id, setEntry);
+
+    const unsub = listenToPatientActiveEntry(profile.id, (nextEntry, nextPeopleAhead) => {
+      setEntry(nextEntry);
+      setPeopleAhead(nextPeopleAhead);
+    });
+
     const unsubVisits = listenToPatientVisits(profile.id, setVisits);
-    const unsubNotifs = listenToPatientNotifications(profile.id, setNotifications);
+
+    const unsubNotifs = listenToPatientNotifications(profile.id, (items) => {
+      if (seenNotificationIds.current === null) {
+        // First load: just remember what's already there, don't pop these.
+        seenNotificationIds.current = new Set(items.map((n) => n.id));
+      } else {
+        for (const item of items) {
+          if (!seenNotificationIds.current.has(item.id)) {
+            seenNotificationIds.current.add(item.id);
+            showBrowserNotification("QueueCare", item.message);
+          }
+        }
+      }
+      setNotifications(items);
+    });
+
     return () => {
       unsub();
       unsubVisits();
       unsubNotifs();
     };
   }, [profile]);
-
-  useEffect(() => {
-    if (!entry) {
-      setPeopleAhead(0);
-      return;
-    }
-    return listenToDoctorQueue(entry.doctorId, (entries) => {
-      setPeopleAhead(
-        entries.filter((e) => e.status === "waiting" && e.tokenNumber < entry.tokenNumber).length
-      );
-    });
-  }, [entry]);
 
   async function handleJoin() {
     if (!profile) return;
@@ -85,29 +100,17 @@ function PatientHome() {
               </div>
             </div>
 
-            <div className="dashboard-grid">
-              <div className="panel">
-                <h3>Your Doctor</h3>
-                <div className="doctor-info">
-                  <div className="doctor-avatar">
-                    {entry.doctorName.split(" ").map((n) => n[0]).join("")}
-                  </div>
-                  <div>
-                    <p className="doctor-name-text">{entry.doctorName}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="panel">
-                <h3>Notifications</h3>
-                <ul className="notification-list">
-                  {notifications.length === 0 && <li>No notifications yet.</li>}
-                  {notifications.map((note) => (
-                    <li key={note.id}>{note.message}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            <div className="panel">
+  <h3>Your Doctor</h3>
+  <div className="doctor-info">
+    <div className="doctor-avatar">
+      {entry.doctorName.split(" ").map((n) => n[0]).join("")}
+    </div>
+    <div>
+      <p className="doctor-name-text">{entry.doctorName}</p>
+    </div>
+  </div>
+</div>
           </>
         ) : (
           <div className="panel">
@@ -129,7 +132,11 @@ function PatientHome() {
           <h3>Recent Visit History</h3>
           <table className="history-table">
             <thead>
-              <tr><th>Date</th><th>Doctor</th><th>Reason</th></tr>
+              <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Reason</th>
+              </tr>
             </thead>
             <tbody>
               {visits.length === 0 && <tr><td colSpan={3}>No visits yet.</td></tr>}
@@ -143,6 +150,7 @@ function PatientHome() {
             </tbody>
           </table>
         </div>
+        <Footer/>
       </main>
     </div>
   );
